@@ -15,9 +15,8 @@ const TaskCard = ({
   onDelete,
   className 
 }) => {
-  const isOverdue = task.dueDate && !task.completed && isBefore(new Date(task.dueDate), startOfDay(new Date()))
-  const isDueToday = task.dueDate && format(new Date(task.dueDate), "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd")
-  
+const isOverdue = task.due_date_c && !task.completed_c && isBefore(new Date(task.due_date_c), startOfDay(new Date()))
+  const isDueToday = task.due_date_c && format(new Date(task.due_date_c), "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd")
   const getDueDateVariant = () => {
     if (isOverdue) return "overdue"
     if (isDueToday) return "warning"
@@ -37,7 +36,7 @@ const TaskCard = ({
       transition={{ duration: 0.2 }}
       className={cn(
         "bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200",
-        task.completed && "bg-gradient-to-r from-success/5 to-primary/5 border-success/20",
+task.completed_c && "bg-gradient-to-r from-success/5 to-primary/5 border-success/20",
         className
       )}
     >
@@ -45,29 +44,29 @@ const TaskCard = ({
         <div className="flex items-start gap-4 flex-1">
           <div className="pt-1">
             <Checkbox
-              checked={task.completed}
+checked={task.completed_c}
               onChange={handleToggleComplete}
             />
           </div>
           
           <div className="flex-1 min-w-0">
             <h3 className={cn(
-              "font-semibold text-lg leading-tight",
-              task.completed 
+"font-semibold text-lg leading-tight",
+              task.completed_c 
                 ? "line-through text-gray-500" 
                 : "text-secondary"
             )}>
-              {task.title}
+              {task.title_c}
             </h3>
             
-            {task.description && (
+            {task.description_c && (
               <p className={cn(
                 "mt-2 text-sm leading-relaxed",
-                task.completed 
+                task.completed_c 
                   ? "text-gray-400" 
                   : "text-gray-600"
               )}>
-                {task.description}
+                {task.description_c}
               </p>
             )}
           </div>
@@ -96,16 +95,16 @@ const TaskCard = ({
       
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {category && (
-            <Badge color={category.color}>
-              {category.name}
+{category && (
+            <Badge color={category.color_c}>
+              {category.name_c}
             </Badge>
           )}
           
-          {task.dueDate && (
+{task.due_date_c && (
             <Badge variant={getDueDateVariant()}>
               <ApperIcon name="Calendar" size={12} className="mr-1" />
-              {format(new Date(task.dueDate), "MMM d")}
+              {format(new Date(task.due_date_c), "MMM d")}
               {isOverdue && (
                 <ApperIcon name="AlertTriangle" size={12} className="ml-1" />
               )}
@@ -113,8 +112,8 @@ const TaskCard = ({
           )}
         </div>
         
-        <div className="text-xs text-gray-400">
-          {format(new Date(task.createdAt), "MMM d, h:mm a")}
+<div className="text-xs text-gray-400">
+          {format(new Date(task.created_at_c || task.CreatedOn), "MMM d, h:mm a")}
         </div>
       </div>
     </motion.div>

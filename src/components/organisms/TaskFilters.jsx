@@ -47,7 +47,7 @@ const TaskFilters = ({
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="min-w-[140px]">
             <CategorySelector
-              categories={categories}
+categories={categories}
               value={selectedCategory}
               onChange={onCategoryChange}
               showAll={true}

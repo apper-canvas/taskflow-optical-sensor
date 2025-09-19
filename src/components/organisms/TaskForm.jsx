@@ -15,7 +15,7 @@ const TaskForm = ({
   onCancel,
   isVisible 
 }) => {
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     title: "",
     description: "",
     dueDate: "",
@@ -23,13 +23,13 @@ const TaskForm = ({
   })
   const [errors, setErrors] = useState({})
 
-  useEffect(() => {
+useEffect(() => {
     if (task) {
       setFormData({
-        title: task.title,
-        description: task.description || "",
-        dueDate: task.dueDate ? format(new Date(task.dueDate), "yyyy-MM-dd") : "",
-        categoryId: task.categoryId || ""
+        title: task.title_c || "",
+        description: task.description_c || "",
+        dueDate: task.due_date_c ? format(new Date(task.due_date_c), "yyyy-MM-dd") : "",
+        categoryId: task.category_id_c?.Id || task.category_id_c || ""
       })
     } else {
       setFormData({

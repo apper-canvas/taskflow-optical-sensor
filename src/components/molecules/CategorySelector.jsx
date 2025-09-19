@@ -9,7 +9,7 @@ const CategorySelector = ({
   showAll = false,
   className 
 }) => {
-  const selectedCategory = categories.find(cat => cat.Id === value)
+const selectedCategory = categories.find(cat => cat.Id === value)
   
   return (
     <div className="space-y-2">
@@ -23,15 +23,15 @@ const CategorySelector = ({
         </option>
         {categories.map(category => (
           <option key={category.Id} value={category.Id}>
-            {category.name}
+            {category.name_c}
           </option>
         ))}
       </Select>
       
       {selectedCategory && (
         <div className="flex items-center gap-2">
-          <Badge color={selectedCategory.color}>
-            {selectedCategory.name}
+          <Badge color={selectedCategory.color_c}>
+            {selectedCategory.name_c}
           </Badge>
         </div>
       )}

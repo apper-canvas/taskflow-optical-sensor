@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useMemo } from "react"
-import { toast } from "react-toastify"
-import { isAfter, isBefore, startOfDay } from "date-fns"
-import Header from "@/components/organisms/Header"
-import TaskForm from "@/components/organisms/TaskForm"
-import TaskFilters from "@/components/organisms/TaskFilters"
-import TaskList from "@/components/organisms/TaskList"
-import Loading from "@/components/ui/Loading"
-import Error from "@/components/ui/Error"
-import { taskService } from "@/services/api/taskService"
-import { categoryService } from "@/services/api/categoryService"
+import React, { useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
+import { isAfter, isBefore, startOfDay } from "date-fns";
+import { taskService } from "@/services/api/taskService";
+import { categoryService } from "@/services/api/categoryService";
+import TaskFilters from "@/components/organisms/TaskFilters";
+import Header from "@/components/organisms/Header";
+import TaskList from "@/components/organisms/TaskList";
+import TaskForm from "@/components/organisms/TaskForm";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
 
 const TasksPage = () => {
   const [tasks, setTasks] = useState([])
@@ -49,44 +49,44 @@ const TasksPage = () => {
   }
 
   // Filtered and sorted tasks
-  const filteredTasks = useMemo(() => {
+const filteredTasks = useMemo(() => {
     let filtered = tasks.filter(task => {
       // Search filter
       if (searchTerm) {
         const searchLower = searchTerm.toLowerCase()
-        if (!task.title.toLowerCase().includes(searchLower) && 
-            !task.description?.toLowerCase().includes(searchLower)) {
+        if (!task.title_c?.toLowerCase().includes(searchLower) && 
+            !task.description_c?.toLowerCase().includes(searchLower)) {
           return false
         }
       }
 
       // Category filter
-      if (selectedCategory && task.categoryId !== selectedCategory) {
+      if (selectedCategory && task.category_id_c?.Id !== selectedCategory && task.category_id_c !== selectedCategory) {
         return false
       }
 
       // Status filter
-      if (statusFilter === "pending" && task.completed) return false
-      if (statusFilter === "completed" && !task.completed) return false
+      if (statusFilter === "pending" && task.completed_c) return false
+      if (statusFilter === "completed" && !task.completed_c) return false
 
       return true
     })
 
     // Sort tasks
-    filtered.sort((a, b) => {
+filtered.sort((a, b) => {
       switch (sortBy) {
         case "oldest":
-          return new Date(a.createdAt) - new Date(b.createdAt)
+          return new Date(a.created_at_c || a.CreatedOn) - new Date(b.created_at_c || b.CreatedOn)
         case "dueDate":
-          if (!a.dueDate && !b.dueDate) return 0
-          if (!a.dueDate) return 1
-          if (!b.dueDate) return -1
-          return new Date(a.dueDate) - new Date(b.dueDate)
+          if (!a.due_date_c && !b.due_date_c) return 0
+          if (!a.due_date_c) return 1
+          if (!b.due_date_c) return -1
+          return new Date(a.due_date_c) - new Date(b.due_date_c)
         case "title":
-          return a.title.localeCompare(b.title)
+          return a.title_c?.localeCompare(b.title_c) || 0
         case "newest":
         default:
-          return new Date(b.createdAt) - new Date(a.createdAt)
+          return new Date(b.created_at_c || b.CreatedOn) - new Date(a.created_at_c || a.CreatedOn)
       }
     })
 
@@ -94,13 +94,13 @@ const TasksPage = () => {
   }, [tasks, searchTerm, selectedCategory, sortBy, statusFilter])
 
   // Task statistics
-  const taskStats = useMemo(() => {
+const taskStats = useMemo(() => {
     const total = tasks.length
-    const completed = tasks.filter(task => task.completed).length
+    const completed = tasks.filter(task => task.completed_c).length
     const overdue = tasks.filter(task => 
-      task.dueDate && 
-      !task.completed && 
-      isBefore(new Date(task.dueDate), startOfDay(new Date()))
+      task.due_date_c && 
+      !task.completed_c && 
+      isBefore(new Date(task.due_date_c), startOfDay(new Date()))
     ).length
 
     return { total, completed, overdue }
@@ -119,16 +119,19 @@ const TasksPage = () => {
     }
   }
 
-  const handleUpdateTask = async (taskData) => {
+const handleUpdateTask = async (taskData) => {
     try {
       const updatedTask = await taskService.update(editingTask.Id, taskData)
-      setTasks(prev => prev.map(task => 
-        task.Id === editingTask.Id ? updatedTask : task
-      ))
+      if (updatedTask) {
+        setTasks(prev => prev.map(task => 
+          task.Id === editingTask.Id ? updatedTask : task
+        ))
+        toast.success("Task updated successfully")
+      }
       setShowTaskForm(false)
       setEditingTask(null)
-      toast.success("Task updated successfully!")
     } catch (err) {
+      console.error("Error updating task:", err)
       toast.error("Failed to update task")
     }
   }
@@ -136,18 +139,25 @@ const TasksPage = () => {
   const handleToggleComplete = async (taskId) => {
     try {
       const task = tasks.find(t => t.Id === taskId)
+      if (!task) {
+        toast.error("Task not found")
+        return
+      }
+      
       const updatedTask = await taskService.update(taskId, {
-        completed: !task.completed
+        completed: !task.completed_c
       })
       
-      setTasks(prev => prev.map(t => 
-        t.Id === taskId ? updatedTask : t
-      ))
-      
-      if (updatedTask.completed) {
-        toast.success("🎉 Task completed! Great job!")
-      } else {
-        toast.success("Task marked as pending")
+      if (updatedTask) {
+        setTasks(prev => prev.map(t => 
+          t.Id === taskId ? updatedTask : t
+        ))
+        
+        if (updatedTask.completed_c) {
+          toast.success("🎉 Task completed! Great job!")
+        } else {
+          toast.success("Task marked as pending")
+        }
       }
     } catch (err) {
       toast.error("Failed to update task")
