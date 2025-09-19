@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useContext } from "react";
+import { AuthContext } from '../../App';
 import ApperIcon from "@/components/ApperIcon";
 import Button from "@/components/atoms/Button";
 import Badge from "@/components/atoms/Badge";
@@ -60,13 +61,9 @@ const Header = ({
             <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => {
-                    const {
-                        AuthContext
-                    } = require("../../App");
-
-                    const authMethods = React.useContext(AuthContext);
-
+onClick={() => {
+                    const authMethods = useContext(AuthContext);
+                    
                     if (authMethods?.logout) {
                         authMethods.logout();
                     }
