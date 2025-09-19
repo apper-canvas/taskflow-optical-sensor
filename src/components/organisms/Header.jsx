@@ -10,8 +10,8 @@ const Header = ({
   overdueTasks,
   onCreateTask 
 }) => {
+  const authMethods = useContext(AuthContext);
   const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
-  
   return (
     <div
     className="bg-gradient-to-r from-white to-surface rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
@@ -62,8 +62,6 @@ const Header = ({
                 variant="ghost"
                 size="sm"
 onClick={() => {
-                    const authMethods = useContext(AuthContext);
-                    
                     if (authMethods?.logout) {
                         authMethods.logout();
                     }
